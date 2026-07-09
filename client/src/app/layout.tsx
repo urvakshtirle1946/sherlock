@@ -1,5 +1,9 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: 'Sherlock Candidate Identifier — Biometric and Behavioural Analysis Dashboard',
@@ -12,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full dark antialiased">
+    <html lang="en" className={cn("h-full dark antialiased", "font-sans", geist.variable)}>
       <body className="min-h-full flex flex-col bg-slate-950 text-slate-100">
         {children}
       </body>

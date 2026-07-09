@@ -1,14 +1,8 @@
 'use client';
 
 import React from 'react';
-import {
-  Fingerprint,
-  EyeOff,
-  Camera,
-  AlertTriangle,
-  Clock,
-  Activity,
-} from 'lucide-react';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
 
 export interface MonitoringEvent {
   type: string;
@@ -29,29 +23,6 @@ export interface MonitoringEvent {
   };
 }
 
-const EVENT_ICONS: Record<string, React.ReactNode> = {
-  device_fingerprint: <Fingerprint className="w-3 h-3" />,
-  tab_blur: <EyeOff className="w-3 h-3" />,
-  tab_focus: <Activity className="w-3 h-3" />,
-  camera_on: <Camera className="w-3 h-3" />,
-  camera_off: <Camera className="w-3 h-3" />,
-  face_missing: <AlertTriangle className="w-3 h-3" />,
-  posture_warning: <AlertTriangle className="w-3 h-3" />,
-  timer_started: <Clock className="w-3 h-3" />,
-  timer_ended: <Clock className="w-3 h-3" />,
-};
-
-const EVENT_COLORS: Record<string, string> = {
-  tab_blur: 'text-amber-400',
-  face_missing: 'text-rose-400',
-  posture_warning: 'text-amber-400',
-  camera_off: 'text-rose-400',
-  camera_denied: 'text-rose-400',
-  timer_ended: 'text-gray-400',
-  session_ready: 'text-emerald-400',
-  device_fingerprint: 'text-cyan-400',
-};
-
 interface MonitoringPanelProps {
   events: MonitoringEvent[];
   sessionId: string;
@@ -64,113 +35,124 @@ export function MonitoringPanel({ events, sessionId }: MonitoringPanelProps) {
       : `/monitor/${sessionId}`;
 
   return (
-    <div className="glass-panel p-4 space-y-3 h-full flex flex-col">
-      <div className="flex items-center justify-between border-b border-white/5 pb-3">
-        <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
-          <Activity className="w-4 h-4 text-cyan-400" />
-          Candidate Monitor
+    <Card className="bg-black border-zinc-800 rounded-[3px] p-4 space-y-3 h-full flex flex-col shadow-none">
+      <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
+        <h3 className="text-xs font-semibold text-white uppercase tracking-wider font-mono">
+          Proctoring Monitor
         </h3>
         <a
           href={monitorUrl}
           target="_blank"
           rel="noreferrer"
-          className="text-[10px] text-cyan-400 hover:text-cyan-300 transition-colors"
+          className="text-[9px] text-zinc-400 hover:text-white uppercase font-bold tracking-wider font-mono transition-colors"
         >
           Open monitor →
         </a>
       </div>
 
-      <p className="text-[10px] text-gray-500 leading-relaxed">
-        FingerprintJS device ID · Page Visibility tab blur · MediaPipe face/posture · interview timer.
-        Background app blocking and tab lock are not in scope.
+      <p className="text-[9px] text-zinc-500 uppercase leading-relaxed font-mono">
+        TRACKS CLIENT FINGERPRINT · TAB VISIBILITY · FACE & POSTURE WARNINGS.
       </p>
 
       {/* Shareable Link Box */}
-      <div className="bg-slate-900/50 border border-white/5 rounded-lg p-2.5 space-y-1.5">
-        <div className="flex items-center justify-between text-[9px] text-gray-500 font-semibold uppercase tracking-wider">
+      <div className="bg-zinc-950 border border-zinc-900 rounded-[2px] p-2.5 space-y-1.5 font-mono">
+        <div className="flex items-center justify-between text-[8px] text-zinc-500 font-bold uppercase tracking-wider">
           <span>Candidate Monitoring Link</span>
-          <button
+          <Button
             onClick={() => {
               navigator.clipboard.writeText(monitorUrl);
               alert('Copied candidate monitor link to clipboard!');
             }}
-            className="text-cyan-400 hover:text-cyan-300 cursor-pointer font-semibold uppercase focus:outline-none"
+            variant="outline"
+            size="sm"
+            className="h-5 text-[8px] px-1.5 uppercase font-bold rounded-[2px] border-zinc-800 hover:bg-zinc-900 cursor-pointer"
           >
             Copy URL
-          </button>
+          </Button>
         </div>
-        <div className="bg-slate-950/80 border border-white/5 rounded px-2 py-1 text-[10px] text-cyan-300 select-all font-mono truncate">
-          {monitorUrl}
+        <div className="bg-black border border-zinc-900 rounded-[2px] px-2 py-1 text-[8px] text-white select-all font-mono truncate">
+          {monitorUrl.toUpperCase()}
         </div>
       </div>
 
-      <div className="flex-grow overflow-y-auto space-y-1.5 max-h-48">
+      <div className="flex-grow overflow-y-auto space-y-1.5 max-h-48 font-mono text-[9px]">
         {events.length === 0 ? (
-          <p className="text-xs text-gray-500 text-center py-4">
+          <p className="text-[10px] text-zinc-500 text-center py-4 uppercase">
             No monitoring events yet. Share the monitor link with the candidate.
           </p>
         ) : (
-          events.slice(0, 30).map((ev, i) => (
-            <div
-              key={`${ev.timestamp}-${i}`}
-              className="flex items-start gap-2 text-[10px] py-1 border-b border-white/3"
-            >
-              <span className={`mt-0.5 flex-shrink-0 ${EVENT_COLORS[ev.type] ?? 'text-gray-500'}`}>
-                {EVENT_ICONS[ev.type] ?? <Activity className="w-3 h-3" />}
-              </span>
-              <div className="flex-grow min-w-0">
-                <span className={`font-medium ${EVENT_COLORS[ev.type] ?? 'text-gray-300'}`}>
-                  {ev.type.replace(/_/g, ' ')}
+          events.slice(0, 30).map((ev, i) => {
+            const cleanType = ev.type.replace(/_/g, ' ').toUpperCase();
+            
+            // Symbol tag flag based on type severity
+            let symbol = '[+]';
+            if (ev.type === 'tab_blur' || ev.type === 'camera_off' || ev.type === 'face_missing' || ev.type === 'posture_warning') {
+              symbol = '[!]';
+            }
+
+            return (
+              <div
+                key={`${ev.timestamp}-${i}`}
+                className="flex items-start gap-1.5 py-1 border-b border-zinc-900 last:border-0"
+              >
+                <span className={symbol === '[!]' ? 'text-white font-bold' : 'text-zinc-600'}>
+                  {symbol}
                 </span>
-                {ev.detail && (
-                  <span className="text-gray-500 ml-1">— {ev.detail}</span>
-                )}
-                {ev.type === 'device_fingerprint' && ev.metadata?.details && (
-                  <div className="mt-1.5 p-2 bg-slate-950/50 rounded border border-white/5 space-y-1 text-gray-400 font-mono text-[9px] leading-normal">
-                    <div className="flex justify-between border-b border-white/3 pb-0.5 mb-1">
-                      <span className="text-gray-600">IP ADDRESS:</span>
-                      <span className="text-cyan-400 font-bold">{ev.metadata.ipAddress || 'Unknown'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">PLATFORM:</span>
-                      <span className="text-white font-medium">{ev.metadata.details.os} · {ev.metadata.details.browser}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">DEVICE TYPE:</span>
-                      <span className="text-white uppercase font-medium">{ev.metadata.details.deviceType}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">SCREEN SIZE:</span>
-                      <span className="text-white font-medium">{ev.metadata.details.screen}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">PROCESSOR:</span>
-                      <span className="text-white font-medium">{ev.metadata.details.cpuCores} CPU cores</span>
-                    </div>
-                    {ev.metadata.details.ram && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">SYSTEM MEMORY:</span>
-                        <span className="text-white font-medium">{ev.metadata.details.ram}</span>
+                <div className="flex-grow min-w-0">
+                  <span className="font-bold text-zinc-300">
+                    {cleanType}
+                  </span>
+                  {ev.detail && (
+                    <span className="text-zinc-500 ml-1">— {ev.detail.toUpperCase()}</span>
+                  )}
+                  {ev.type === 'device_fingerprint' && ev.metadata?.details && (
+                    <div className="mt-1.5 p-2 bg-zinc-950 rounded-[2px] border border-zinc-900 space-y-1 text-zinc-500 text-[8px] leading-normal uppercase">
+                      <div className="flex justify-between border-b border-zinc-900 pb-0.5 mb-1">
+                        <span className="text-zinc-600 font-semibold">IP ADDRESS:</span>
+                        <span className="text-white font-bold">{ev.metadata.ipAddress || 'UNKNOWN'}</span>
                       </div>
-                    )}
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">GPU RENDERER:</span>
-                      <span className="text-gray-300 font-medium truncate max-w-[130px]" title={ev.metadata.details.gpu}>{ev.metadata.details.gpu}</span>
+                      <div className="flex justify-between">
+                        <span className="text-zinc-600 font-semibold">PLATFORM:</span>
+                        <span className="text-zinc-300">{ev.metadata.details.os} · {ev.metadata.details.browser}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-zinc-600 font-semibold">DEVICE TYPE:</span>
+                        <span className="text-zinc-300">{ev.metadata.details.deviceType}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-zinc-600 font-semibold">SCREEN SIZE:</span>
+                        <span className="text-zinc-300">{ev.metadata.details.screen}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-zinc-600 font-semibold">PROCESSOR:</span>
+                        <span className="text-zinc-300">{ev.metadata.details.cpuCores} CPU CORES</span>
+                      </div>
+                      {ev.metadata.details.ram && (
+                        <div className="flex justify-between">
+                          <span className="text-zinc-600 font-semibold">SYSTEM MEMORY:</span>
+                          <span className="text-zinc-300">{ev.metadata.details.ram}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between">
+                        <span className="text-zinc-600 font-semibold">GPU RENDERER:</span>
+                        <span className="text-zinc-300 truncate max-w-[130px]">{ev.metadata.details.gpu}</span>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
+                <span className="text-zinc-600 flex-shrink-0">
+                  {new Date(ev.timestamp).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                  })}
+                </span>
               </div>
-              <span className="text-gray-600 flex-shrink-0 font-mono">
-                {new Date(ev.timestamp).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit',
-                })}
-              </span>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
-    </div>
+    </Card>
   );
 }

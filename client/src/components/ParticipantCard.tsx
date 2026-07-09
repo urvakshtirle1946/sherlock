@@ -1,6 +1,8 @@
 import React from 'react';
 import { Participant, Prediction } from '../store/sessionStore';
-import { Camera, Mic, ScreenShare, Mail, UserCheck, Volume2, Sparkles, Check, X } from 'lucide-react';
+import { Camera, Mic, ScreenShare, Mail, UserCheck, Volume2, Sparkles } from 'lucide-react';
+import { Card } from './ui/card';
+import { Badge } from './ui/badge';
 
 interface ParticipantCardProps {
   participant: Participant;
@@ -11,7 +13,6 @@ export function ParticipantCard({ participant, prediction }: ParticipantCardProp
   const isLeft = !!participant.leftAt;
   const confidence = prediction ? Math.round(prediction.confidenceScore * 100) : 0;
   
-  // Find name match and email match percentage from the evidence breakdown if available
   const nameMatch = prediction?.evidenceBreakdown?.['name_match']
     ? Math.round(prediction.evidenceBreakdown['name_match'].rawScore * 100)
     : 0;
@@ -25,98 +26,98 @@ export function ParticipantCard({ participant, prediction }: ParticipantCardProp
     : null;
 
   return (
-    <div className={`glass-panel p-4 relative overflow-hidden transition-all duration-300 ${isLeft ? 'opacity-40' : 'glass-panel-hover border-cyan-500/10'}`}>
+    <Card className={`bg-black border-zinc-800 rounded-[3px] p-4 relative overflow-hidden transition-all duration-300 shadow-none ${isLeft ? 'opacity-40' : 'hover:border-zinc-700'}`}>
       {/* Ambiguity and Left tags */}
       <div className="absolute top-2 right-2 flex space-x-1.5">
         {prediction?.ambiguous && (
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 pulse-glow">
-            Ambiguous
-          </span>
+          <Badge variant="outline" className="text-[8px] py-0 px-1 bg-transparent text-amber-500 border-amber-500/30 uppercase rounded-[2px] font-mono">
+            AMBIGUOUS
+          </Badge>
         )}
         {isLeft && (
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-500/10 text-gray-400 border border-gray-500/20">
-            Disconnected
-          </span>
+          <Badge variant="outline" className="text-[8px] py-0 px-1 bg-transparent text-zinc-500 border-zinc-800 uppercase rounded-[2px] font-mono">
+            DISCONNECTED
+          </Badge>
         )}
         {!isLeft && prediction?.rank === 1 && !prediction.ambiguous && (
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 pulse-glow">
-            Top Candidate
-          </span>
+          <Badge variant="outline" className="text-[8px] py-0 px-1 bg-transparent text-white border-white uppercase rounded-[2px] font-mono">
+            TOP CANDIDATE
+          </Badge>
         )}
       </div>
 
-      <div className="flex items-start justify-between mb-3">
+      <div className="flex items-start justify-between mb-3 mt-1">
         <div>
-          <h4 className="font-semibold text-white text-base truncate max-w-[180px]">{participant.displayName}</h4>
-          <span className="text-xs text-gray-400 font-mono select-all">{participant.participantId.slice(0, 8)}...</span>
+          <h4 className="font-bold text-white text-sm truncate max-w-[180px] uppercase font-mono">{participant.displayName}</h4>
+          <span className="text-[9px] text-zinc-500 font-mono select-all uppercase">{participant.participantId.slice(0, 8)}...</span>
         </div>
         <div className="text-right">
-          <span className="text-xl font-bold text-cyan-400 font-mono">{confidence}%</span>
-          <p className="text-[10px] text-gray-400 uppercase tracking-wider">Confidence</p>
+          <span className="text-sm font-bold text-white font-mono">{confidence}%</span>
+          <p className="text-[8px] text-zinc-500 uppercase tracking-wider font-semibold">Confidence</p>
         </div>
       </div>
 
       {/* Grid of indicators */}
-      <div className="grid grid-cols-2 gap-2 text-xs mb-4">
+      <div className="grid grid-cols-2 gap-2 text-[10px] mb-4 font-mono">
         {/* Email indicator */}
-        <div className="flex items-center space-x-2 text-gray-300">
-          <Mail className="w-3.5 h-3.5 text-gray-400" />
+        <div className="flex items-center space-x-2 text-zinc-400">
+          <Mail className="w-3 h-3 text-zinc-500" />
           <span className="truncate" title={participant.email || 'No email detected'}>
             {participant.email ? (
-              <span className={emailMatch && emailMatch > 0 ? 'text-emerald-400 font-medium' : 'text-gray-300'}>
-                {participant.email.split('@')[0]}
+              <span className="text-zinc-300">
+                {participant.email.split('@')[0].toUpperCase()}
               </span>
             ) : (
-              <span className="text-gray-500 italic">No email</span>
+              <span className="text-zinc-600 italic">NO EMAIL</span>
             )}
           </span>
         </div>
 
         {/* Speaking time */}
-        <div className="flex items-center space-x-2 text-gray-300">
-          <Volume2 className="w-3.5 h-3.5 text-gray-400" />
-          <span>Speaking: <strong className="font-mono text-white">{Math.round(participant.totalSpeakingSeconds)}s</strong></span>
+        <div className="flex items-center space-x-2 text-zinc-400">
+          <Volume2 className="w-3 h-3 text-zinc-500" />
+          <span>SPEAK: <strong className="font-bold text-white">{Math.round(participant.totalSpeakingSeconds)}S</strong></span>
         </div>
 
         {/* Name Match */}
-        <div className="flex items-center space-x-2 text-gray-300">
-          <UserCheck className="w-3.5 h-3.5 text-gray-400" />
-          <span>Name Match: <strong className={`font-mono ${nameMatch > 70 ? 'text-emerald-400' : nameMatch > 30 ? 'text-amber-400' : 'text-rose-400'}`}>{nameMatch}%</strong></span>
+        <div className="flex items-center space-x-2 text-zinc-400">
+          <UserCheck className="w-3 h-3 text-zinc-500" />
+          <span>NAME: <strong className="font-bold text-white">{nameMatch}%</strong></span>
         </div>
 
         {/* Face Match */}
-        <div className="flex items-center space-x-2 text-gray-300">
-          <Sparkles className="w-3.5 h-3.5 text-gray-400" />
+        <div className="flex items-center space-x-2 text-zinc-400">
+          <Sparkles className="w-3 h-3 text-zinc-500" />
           <span>
-            Face Match:{' '}
+            FACE:{' '}
             {faceMatch !== null ? (
-              <strong className={`font-mono ${faceMatch > 70 ? 'text-emerald-400' : faceMatch > 30 ? 'text-amber-400' : 'text-rose-400'}`}>
+              <strong className="font-bold text-white">
                 {faceMatch}%
               </strong>
             ) : (
-              <span className="text-gray-500 italic">No face frame</span>
+              <span className="text-zinc-600 italic">NONE</span>
             )}
           </span>
         </div>
       </div>
 
       {/* Hardware Status footer bar */}
-      <div className="flex items-center justify-between border-t border-white/5 pt-2.5 mt-2">
+      <div className="flex items-center justify-between border-t border-zinc-900 pt-2.5 mt-2 text-[9px] font-mono">
         <div className="flex space-x-3">
-          <span className={`flex items-center space-x-1 ${participant.cameraOn ? 'text-cyan-400' : 'text-gray-500'}`} title="Camera status">
-            <Camera className="w-3.5 h-3.5" />
-            <span className="text-[10px] uppercase font-mono">{participant.cameraOn ? 'ON' : 'OFF'}</span>
+          <span className={`flex items-center space-x-1 ${participant.cameraOn ? 'text-white' : 'text-zinc-600'}`} title="Camera status">
+            <Camera className="w-3 h-3" />
+            <span className="font-bold">{participant.cameraOn ? 'CAM_ON' : 'CAM_OFF'}</span>
           </span>
-          <span className={`flex items-center space-x-1 ${participant.microphoneOn ? 'text-emerald-400' : 'text-gray-500'}`} title="Microphone status">
-            <Mic className="w-3.5 h-3.5" />
-            <span className="text-[10px] uppercase font-mono">{participant.microphoneOn ? 'ON' : 'OFF'}</span>
+          <span className={`flex items-center space-x-1 ${participant.microphoneOn ? 'text-white' : 'text-zinc-600'}`} title="Microphone status">
+            <Mic className="w-3 h-3" />
+            <span className="font-bold">{participant.microphoneOn ? 'MIC_ON' : 'MIC_OFF'}</span>
           </span>
         </div>
-        <span className={`flex items-center space-x-1 ${participant.screenSharing ? 'text-purple-400' : 'text-gray-500'}`} title="Screen share status">
-          <ScreenShare className="w-3.5 h-3.5" />
-          <span className="text-[10px] uppercase font-mono">{participant.screenSharing ? 'SHARING' : 'INACTIVE'}</span>
+        <span className={`flex items-center space-x-1 ${participant.screenSharing ? 'text-white' : 'text-zinc-600'}`} title="Screen share status">
+          <ScreenShare className="w-3 h-3" />
+          <span className="font-bold">{participant.screenSharing ? 'SHARING' : 'SCREEN_OFF'}</span>
         </span>
       </div>
-    </div>
+    </Card>
   );
 }

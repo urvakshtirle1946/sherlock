@@ -20,6 +20,8 @@ import { useTabVisibility } from '../hooks/useTabVisibility';
 import { useInterviewTimer } from '../hooks/useInterviewTimer';
 import { useCameraMonitor } from '../hooks/useCameraMonitor';
 import { useMonitoringReporter } from '../hooks/useMonitoringReporter';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -159,7 +161,7 @@ export function CandidateMonitor({ sessionId }: CandidateMonitorProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-400 text-sm">
+      <div className="min-h-screen flex items-center justify-center bg-black text-zinc-500 font-mono text-xs uppercase">
         Loading session…
       </div>
     );
@@ -167,102 +169,102 @@ export function CandidateMonitor({ sessionId }: CandidateMonitorProps) {
 
   if (!session) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-rose-400 text-sm">
+      <div className="min-h-screen flex items-center justify-center bg-black text-white font-mono text-xs uppercase">
         Session not found.
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen p-6 cyber-grid max-w-2xl mx-auto flex flex-col gap-6">
+    <main className="min-h-screen p-6 max-w-2xl mx-auto flex flex-col gap-6 font-mono text-[10px]">
       {/* Header */}
       <header className="text-center space-y-1">
-        <div className="w-10 h-10 rounded-lg bg-cyan-600/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mx-auto mb-3">
-          <Monitor className="w-5 h-5" />
+        <div className="w-8 h-8 rounded-[2px] bg-zinc-950 border border-zinc-800 flex items-center justify-center text-white mx-auto mb-3">
+          <Monitor className="w-4 h-4" />
         </div>
-        <h1 className="text-lg font-bold text-white">Interview Monitor</h1>
-        <p className="text-xs text-gray-400">
+        <h1 className="text-sm font-bold text-white uppercase tracking-wider">Interview Monitor</h1>
+        <p className="text-[9px] text-zinc-400 uppercase mt-0.5">
           {session.candidateName} · {session.candidateEmail}
         </p>
       </header>
 
-      {/* Scope notice — background blocking / tab lock not possible */}
-      <div className="glass-panel p-3 text-[10px] text-gray-500 border-white/5 leading-relaxed">
+      {/* Scope notice */}
+      <Card className="bg-zinc-950/20 border border-zinc-900 rounded-[2px] p-3 text-[9px] text-zinc-500 leading-relaxed uppercase shadow-none">
         This monitor detects tab switches and camera/posture via browser APIs.
         It cannot block other apps or lock your browser tab — that requires a native desktop agent.
-      </div>
+      </Card>
 
       {/* Status cards */}
       <div className="grid grid-cols-2 gap-3">
         <StatusCard
-          icon={<Fingerprint className="w-4 h-4" />}
+          icon={<Fingerprint className="w-3.5 h-3.5" />}
           label="Device ID"
           value={fingerprintLoading ? '…' : deviceId?.slice(0, 12) ?? '—'}
           ok={!!deviceId}
           sub="FingerprintJS"
         />
         <StatusCard
-          icon={tabVisibility.isVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+          icon={tabVisibility.isVisible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
           label="Tab Focus"
-          value={tabVisibility.isVisible ? 'Focused' : 'Away'}
+          value={tabVisibility.isVisible ? 'FOCUSED' : 'AWAY'}
           ok={tabVisibility.isVisible}
-          sub={`${tabVisibility.blurCount} switch${tabVisibility.blurCount !== 1 ? 'es' : ''}`}
+          sub={`${tabVisibility.blurCount} SWITCH${tabVisibility.blurCount !== 1 ? 'ES' : ''}`}
         />
         <StatusCard
-          icon={cameraState.faceDetected ? <Camera className="w-4 h-4" /> : <CameraOff className="w-4 h-4" />}
+          icon={cameraState.faceDetected ? <Camera className="w-3.5 h-3.5" /> : <CameraOff className="w-3.5 h-3.5" />}
           label="Camera / Face"
           value={
             cameraState.permissionDenied
-              ? 'Denied'
+              ? 'DENIED'
               : cameraState.faceDetected
-                ? 'Face OK'
-                : 'No face'
+                ? 'FACE OK'
+                : 'NO FACE'
           }
           ok={cameraState.faceDetected}
           sub="MediaPipe Face"
         />
         <StatusCard
-          icon={<Clock className="w-4 h-4" />}
+          icon={<Clock className="w-3.5 h-3.5" />}
           label="Timer"
           value={monitoringActive ? timer.formattedRemaining : `${durationMinutes}:00`}
           ok={!timer.isExpired}
-          sub={monitoringActive ? (timer.isRunning ? 'Running' : 'Ended') : 'Not started'}
+          sub={monitoringActive ? (timer.isRunning ? 'RUNNING' : 'ENDED') : 'NOT STARTED'}
         />
       </div>
 
       {/* Posture */}
       {monitoringActive && (
         <div
-          className={`glass-panel p-3 flex items-center gap-2 text-xs ${
-            cameraState.postureOk ? 'border-emerald-500/20 text-emerald-400' : 'border-amber-500/20 text-amber-400'
+          className={`border rounded-[2px] p-3 flex items-center gap-2 text-[9px] uppercase bg-black ${
+            cameraState.postureOk ? 'border-zinc-800 text-zinc-300' : 'border-amber-800 text-amber-500'
           }`}
         >
           {cameraState.postureOk ? (
-            <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+            <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-white" />
           ) : (
-            <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+            <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-500" />
           )}
-          <span>{cameraState.postureReason || 'Checking posture…'}</span>
-          <span className="ml-auto text-[10px] text-gray-500">MediaPipe Pose</span>
+          <span>{cameraState.postureReason?.toUpperCase() || 'CHECKING POSTURE…'}</span>
+          <span className="ml-auto text-[8px] text-zinc-600">MediaPipe Pose</span>
         </div>
       )}
 
       {cameraState.mediaPipeError && (
-        <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg p-3 text-xs leading-relaxed">
-          <p className="font-semibold mb-1">Face/Posture Detector Error:</p>
-          <code className="text-[10px] break-all">{cameraState.mediaPipeError}</code>
-          <p className="mt-2 text-gray-500 text-[10px]">
+        <div className="bg-black border border-zinc-900 text-zinc-500 rounded-[2px] p-3 text-[9px] leading-relaxed uppercase">
+          <p className="font-bold text-white mb-1">Face/Posture Detector Error:</p>
+          <code className="text-[8px] break-all">{cameraState.mediaPipeError}</code>
+          <p className="mt-2 text-zinc-600 text-[8px]">
             Make sure you have an active internet connection to download the MediaPipe models, and that your webcam is not in use by another application.
           </p>
         </div>
       )}
 
-      {/* Webcam preview — always mounted so permission can be requested pre-start */}
-      <div className="glass-panel p-4 space-y-3">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+      {/* Webcam preview */}
+      <Card className="bg-black border border-zinc-800 rounded-[2px] p-4 space-y-3 shadow-none">
+        <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">
           Camera Preview
         </p>
-        <div className="relative rounded-lg overflow-hidden bg-slate-900 aspect-video">
+        <div className="relative rounded-[2px] overflow-hidden bg-black border border-zinc-900 aspect-video">
           <Webcam
             ref={webcamRef}
             audio={false}
@@ -273,29 +275,30 @@ export function CandidateMonitor({ sessionId }: CandidateMonitorProps) {
             videoConstraints={{ facingMode: 'user', width: 640, height: 480 }}
           />
           {!cameraState.permissionGranted && !cameraState.permissionDenied && (
-            <div className="absolute inset-0 flex items-center justify-center bg-slate-900/80 text-xs text-gray-400">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/80 text-[9px] text-zinc-500 uppercase">
               Allow camera access to continue
             </div>
           )}
         </div>
-      </div>
+      </Card>
 
       {/* Actions */}
       <div className="flex flex-col gap-3">
         {!monitoringActive ? (
-          <button
+          <Button
             onClick={handleStartMonitoring}
             disabled={!cameraState.ready || fingerprintLoading}
-            className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold py-3 rounded-lg cursor-pointer transition-colors"
+            size="sm"
+            className="w-full h-10 text-[10px] font-bold uppercase rounded-[2px] cursor-pointer"
           >
             {!cameraState.permissionGranted
               ? 'Waiting for camera permission…'
               : !cameraState.faceDetected
                 ? 'Position your face in frame…'
                 : 'Start Interview Monitoring'}
-          </button>
+          </Button>
         ) : (
-          <div className="glass-panel p-3 text-center text-xs text-emerald-400 border-emerald-500/20">
+          <div className="border border-zinc-800 bg-zinc-950 p-3 text-center text-[10px] text-white uppercase rounded-[2px] font-bold">
             Monitoring active · {timer.formattedRemaining} remaining
           </div>
         )}
@@ -305,9 +308,9 @@ export function CandidateMonitor({ sessionId }: CandidateMonitorProps) {
             href={session.meetingUrl}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center justify-center gap-2 text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+            className="flex items-center justify-center gap-1.5 text-[9px] text-zinc-400 hover:text-white uppercase font-bold tracking-wider transition-colors"
           >
-            <ExternalLink className="w-3.5 h-3.5" />
+            <ExternalLink className="w-3 h-3" />
             Open meeting link
           </a>
         )}
@@ -330,13 +333,13 @@ function StatusCard({
   sub: string;
 }) {
   return (
-    <div className={`glass-panel p-3 space-y-1 ${ok ? 'border-white/5' : 'border-amber-500/20'}`}>
-      <div className="flex items-center gap-1.5 text-[10px] text-gray-500 uppercase tracking-wider">
+    <Card className="bg-black border border-zinc-800 rounded-[2px] p-3 space-y-1 shadow-none">
+      <div className="flex items-center gap-1.5 text-[8px] text-zinc-500 uppercase tracking-wider font-bold">
         {icon}
         <span>{label}</span>
       </div>
-      <p className={`text-sm font-semibold ${ok ? 'text-white' : 'text-amber-400'}`}>{value}</p>
-      <p className="text-[10px] text-gray-600">{sub}</p>
-    </div>
+      <p className="text-[10px] font-bold text-white uppercase">{value}</p>
+      <p className="text-[8px] text-zinc-600 uppercase">{sub}</p>
+    </Card>
   );
 }

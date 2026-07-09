@@ -2,44 +2,47 @@
 
 import React from 'react';
 import { SessionForm } from '../components/SessionForm';
-import { Eye, ShieldAlert, Sparkles, Terminal } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/card';
+import { Terminal } from 'lucide-react';
 
 export default function Home() {
   return (
-    <main className="min-height-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 cyber-grid">
-      <div className="max-w-md w-full mx-auto space-y-8">
+    <main className="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 bg-black">
+      <div className="max-w-md w-full mx-auto space-y-6">
         
         {/* LOGO & TITLE HEADER */}
-        <div className="text-center flex flex-col items-center">
-          <div className="w-12 h-12 rounded-xl bg-cyan-600/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-4 shadow-lg shadow-cyan-900/20 pulse-glow">
-            <Eye className="w-6 h-6" />
-          </div>
-          <h2 className="text-2xl font-bold tracking-tight text-white flex items-center justify-center space-x-1.5">
-            <span>Sherlock Candidate Identifier</span>
+        <div className="text-center flex flex-col items-center border border-zinc-800 p-6 bg-zinc-950/40 rounded-[3px]">
+          <h2 className="text-lg font-bold tracking-tight text-white uppercase">
+            SHERLOCK AUDITOR
           </h2>
-          <p className="mt-2 text-xs text-gray-400 leading-relaxed max-w-[320px]">
-            Biometric and behavioural analysis under uncertainty. Identifies the actual candidate in video interviews.
+          <p className="mt-2 text-[10px] text-zinc-400 leading-relaxed max-w-[320px] uppercase font-mono">
+            Candidate Verification & Proctoring under Uncertainty
           </p>
         </div>
 
         {/* SETUP CONTAINER */}
-        <div className="glass-panel p-6 border-cyan-500/10 shadow-2xl shadow-cyan-950/20">
-          <div className="flex items-center space-x-2 border-b border-white/5 pb-4 mb-4">
-            <Sparkles className="w-4 h-4 text-cyan-400" />
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Configure Session</h3>
-          </div>
-
-          <SessionForm />
-        </div>
+        <Card className="bg-black border-zinc-800 rounded-[3px] shadow-none">
+          <CardHeader className="border-b border-zinc-800/60 pb-4 mb-4">
+            <CardTitle className="text-xs font-semibold text-white uppercase tracking-wider">
+              Configure Session
+            </CardTitle>
+            <CardDescription className="text-[10px] text-zinc-500 uppercase">
+              Initialize candidate references & meeting links
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SessionForm />
+          </CardContent>
+        </Card>
 
         {/* INFORMATIONAL INFO FOOTER CARD */}
-        <div className="glass-panel p-4 bg-slate-900/40 flex items-start space-x-3 text-xs leading-relaxed text-gray-400 border-white/5">
-          <Terminal className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" />
+        <Card className="bg-zinc-950/20 border-zinc-900 rounded-[3px] shadow-none p-4 flex items-start space-x-3 text-[10px] leading-relaxed text-zinc-400">
+          <Terminal className="w-4 h-4 text-white mt-0.5 flex-shrink-0" />
           <div>
-            <strong className="text-gray-300 font-medium block mb-1">Architecture Warning</strong>
+            <strong className="text-zinc-200 font-semibold block mb-1 uppercase tracking-wider">Architecture Warning</strong>
             The system combines name matching, face similarity, and speaking duration. Launch this session and open the Participant Simulator in the next screen to start generating signals.
           </div>
-        </div>
+        </Card>
 
       </div>
     </main>

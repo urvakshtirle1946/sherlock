@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Shield, Sparkles, Video, Mail, User, Image as ImageIcon, ArrowRight } from 'lucide-react';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -39,7 +41,6 @@ export function SessionForm() {
     try {
       let photoUrl = '';
 
-      // Upload photo if selected
       if (photo) {
         const formData = new FormData();
         formData.append('photo', photo);
@@ -54,12 +55,9 @@ export function SessionForm() {
         }
 
         const uploadData = await uploadRes.json();
-        // The uploaded photo url returned is like /uploads/ref-123.jpg.
-        // We prepend the base url so the client can query it directly.
         photoUrl = `${API_BASE_URL}${uploadData.url}`;
       }
 
-      // Create session (live uses POST /join, demo uses POST /sessions)
       const endpoint = ingestionMode === 'live' ? '/api/sessions/join' : '/api/sessions';
       const sessionRes = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'POST',
@@ -88,10 +86,10 @@ export function SessionForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg p-3 text-xs leading-relaxed">
-          {error}
+        <div className="border border-zinc-800 bg-black text-zinc-400 rounded-[2px] p-3 text-[10px] uppercase font-mono leading-relaxed">
+          [error] {error}
         </div>
       )}
 
@@ -99,11 +97,11 @@ export function SessionForm() {
       <div className="space-y-4">
         {/* Ingestion Mode */}
         <div>
-          <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+          <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">
             Ingestion Mode
           </label>
           <div className="grid grid-cols-2 gap-4">
-            <label className={`flex flex-col items-center justify-center p-3 border rounded-lg cursor-pointer transition-all ${ingestionMode === 'demo' ? 'bg-cyan-950/20 border-cyan-500/50 text-white shadow-lg shadow-cyan-950/20' : 'bg-slate-900/50 border-white/5 text-gray-400 hover:border-white/10'}`}>
+            <label className={`flex flex-col items-center justify-center p-3 border rounded-[2px] cursor-pointer transition-all ${ingestionMode === 'demo' ? 'bg-zinc-950 border-white text-white' : 'bg-black border-zinc-800 text-zinc-500 hover:border-zinc-700'}`}>
               <input
                 type="radio"
                 name="ingestionMode"
@@ -112,12 +110,12 @@ export function SessionForm() {
                 onChange={() => setIngestionMode('demo')}
                 className="sr-only"
               />
-              <Sparkles className={`w-4 h-4 mb-1 ${ingestionMode === 'demo' ? 'text-cyan-400' : 'text-gray-500'}`} />
-              <span className="text-xs font-semibold">Demo Mode</span>
-              <span className="text-[9px] text-gray-500 mt-0.5">Manual Simulator</span>
+              <Sparkles className="w-3.5 h-3.5 mb-1" />
+              <span className="text-[10px] font-semibold uppercase">Demo Mode</span>
+              <span className="text-[8px] text-zinc-500 uppercase mt-0.5">Manual Simulator</span>
             </label>
 
-            <label className={`flex flex-col items-center justify-center p-3 border rounded-lg cursor-pointer transition-all ${ingestionMode === 'live' ? 'bg-cyan-950/20 border-cyan-500/50 text-white shadow-lg shadow-cyan-950/20' : 'bg-slate-900/50 border-white/5 text-gray-400 hover:border-white/10'}`}>
+            <label className={`flex flex-col items-center justify-center p-3 border rounded-[2px] cursor-pointer transition-all ${ingestionMode === 'live' ? 'bg-zinc-950 border-white text-white' : 'bg-black border-zinc-800 text-zinc-500 hover:border-zinc-700'}`}>
               <input
                 type="radio"
                 name="ingestionMode"
@@ -126,63 +124,60 @@ export function SessionForm() {
                 onChange={() => setIngestionMode('live')}
                 className="sr-only"
               />
-              <Video className={`w-4 h-4 mb-1 ${ingestionMode === 'live' ? 'text-cyan-400' : 'text-gray-500'}`} />
-              <span className="text-xs font-semibold">Live Meeting</span>
-              <span className="text-[9px] text-gray-500 mt-0.5">Recall.ai Bot</span>
+              <Video className="w-3.5 h-3.5 mb-1" />
+              <span className="text-[10px] font-semibold uppercase">Live Meeting</span>
+              <span className="text-[8px] text-zinc-500 uppercase mt-0.5">Recall.ai Bot</span>
             </label>
           </div>
         </div>
 
         {/* Interview Duration */}
         <div>
-          <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+          <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">
             Interview Duration (minutes)
           </label>
-          <input
+          <Input
             type="number"
             min={5}
             max={480}
             value={interviewDurationMinutes}
             onChange={(e) => setInterviewDurationMinutes(Number(e.target.value))}
-            className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
+            className="h-8 text-xs bg-black border-zinc-800 focus-visible:ring-1 focus-visible:ring-white rounded-[2px]"
           />
-          <p className="text-[10px] text-gray-500 mt-1">
-            Used by the candidate monitor page for the interview countdown timer.
-          </p>
         </div>
 
         {/* Candidate Name */}
         <div>
-          <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+          <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">
             Candidate Name
           </label>
           <div className="relative">
-            <User className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
-            <input
+            <User className="absolute left-3 top-2 w-3.5 h-3.5 text-zinc-500" />
+            <Input
               type="text"
               required
               value={candidateName}
               onChange={(e) => setCandidateName(e.target.value)}
-              placeholder="e.g. Rahul Sharma"
-              className="w-full bg-slate-900 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors"
+              placeholder="RAHUL SHARMA"
+              className="h-8 pl-9 text-xs bg-black border-zinc-800 focus-visible:ring-1 focus-visible:ring-white rounded-[2px] uppercase"
             />
           </div>
         </div>
 
         {/* Candidate Email */}
         <div>
-          <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+          <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">
             Candidate Email
           </label>
           <div className="relative">
-            <Mail className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
-            <input
+            <Mail className="absolute left-3 top-2 w-3.5 h-3.5 text-zinc-500" />
+            <Input
               type="email"
               required
               value={candidateEmail}
               onChange={(e) => setCandidateEmail(e.target.value)}
-              placeholder="e.g. rahul@company.com"
-              className="w-full bg-slate-900 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors"
+              placeholder="RAHUL@COMPANY.COM"
+              className="h-8 pl-9 text-xs bg-black border-zinc-800 focus-visible:ring-1 focus-visible:ring-white rounded-[2px] uppercase"
             />
           </div>
         </div>
@@ -190,33 +185,33 @@ export function SessionForm() {
         {/* Platform & Meeting URL */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="md:col-span-1">
-            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+            <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">
               Platform
             </label>
             <select
               value={meetingPlatform}
               onChange={(e) => setMeetingPlatform(e.target.value)}
-              className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
+              className="h-8 w-full bg-black border border-zinc-800 text-xs text-white px-2 focus:outline-none focus:border-white rounded-[2px]"
             >
-              <option value="google_meet">Google Meet</option>
-              <option value="zoom">Zoom</option>
-              <option value="teams">MS Teams</option>
-              <option value="other">Other</option>
+              <option value="google_meet">GOOGLE MEET</option>
+              <option value="zoom">ZOOM</option>
+              <option value="teams">MS TEAMS</option>
+              <option value="other">OTHER</option>
             </select>
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+            <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">
               Meeting URL
             </label>
             <div className="relative">
-              <Video className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
-              <input
+              <Video className="absolute left-3 top-2 w-3.5 h-3.5 text-zinc-500" />
+              <Input
                 type="url"
                 value={meetingUrl}
                 onChange={(e) => setMeetingUrl(e.target.value)}
-                placeholder="e.g. https://meet.google.com/abc-defg-hij"
-                className="w-full bg-slate-900 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                placeholder="HTTPS://MEET.GOOGLE.COM/ABC-DEFG-HIJ"
+                className="h-8 pl-9 text-xs bg-black border-zinc-800 focus-visible:ring-1 focus-visible:ring-white rounded-[2px]"
               />
             </div>
           </div>
@@ -224,7 +219,7 @@ export function SessionForm() {
 
         {/* Reference Photo Upload */}
         <div>
-          <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+          <label className="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">
             Reference Photo
           </label>
           <div className="flex items-center space-x-4">
@@ -232,11 +227,11 @@ export function SessionForm() {
               <img
                 src={photoPreview}
                 alt="Preview"
-                className="w-14 h-14 object-cover rounded-lg border border-cyan-500/30"
+                className="w-10 h-10 object-cover rounded-[2px] border border-zinc-800"
               />
             ) : (
-              <div className="w-14 h-14 rounded-lg bg-slate-900 border border-dashed border-white/10 flex items-center justify-center text-gray-600">
-                <ImageIcon className="w-6 h-6" />
+              <div className="w-10 h-10 rounded-[2px] bg-black border border-dashed border-zinc-800 flex items-center justify-center text-zinc-600">
+                <ImageIcon className="w-4 h-4" />
               </div>
             )}
             <div className="flex-grow">
@@ -249,24 +244,25 @@ export function SessionForm() {
               />
               <label
                 htmlFor="ref-photo-file"
-                className="inline-flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 active:bg-slate-900 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-gray-200 cursor-pointer font-medium transition-colors"
+                className="inline-flex items-center justify-center h-8 bg-zinc-950 border border-zinc-800 text-[10px] text-zinc-200 cursor-pointer font-semibold uppercase px-4 rounded-[2px] hover:bg-zinc-900 transition-colors"
               >
-                <span>Choose Image</span>
+                <span>CHOOSE IMAGE</span>
               </label>
-              <p className="text-[10px] text-gray-500 mt-1">PNG, JPG, or WEBP up to 5MB. Biometric verification reference.</p>
+              <p className="text-[8px] text-zinc-500 uppercase mt-1">PNG, JPG, or WEBP up to 5MB. Biometric verification reference.</p>
             </div>
           </div>
         </div>
       </div>
 
-      <button
+      <Button
         type="submit"
         disabled={loading}
-        className="w-full flex items-center justify-center space-x-2 bg-cyan-600 hover:bg-cyan-500 disabled:bg-cyan-700 disabled:opacity-50 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors cursor-pointer shadow-lg shadow-cyan-900/20"
+        size="sm"
+        className="w-full h-8 text-[10px] font-bold uppercase rounded-[2px] cursor-pointer"
       >
-        <span>{loading ? 'Initializing...' : 'Initialize Sherlock Session'}</span>
-        {!loading && <ArrowRight className="w-4 h-4" />}
-      </button>
+        <span>{loading ? 'INITIALIZING...' : 'INITIALIZE SHERLOCK SESSION'}</span>
+        {!loading && <ArrowRight className="w-3.5 h-3.5 ml-1.5" />}
+      </Button>
     </form>
   );
 }

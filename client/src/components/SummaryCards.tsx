@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSessionStore } from '../store/sessionStore';
+import { Card } from './ui/card';
 import { Shield, Users, Clock, Cpu } from 'lucide-react';
 
 export function SummaryCards() {
@@ -29,56 +30,56 @@ export function SummaryCards() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
       {/* CARD 1: Leading Candidate */}
-      <div className="glass-panel glass-panel-hover p-4 flex items-center space-x-4">
-        <div className="p-3 rounded-lg bg-cyan-500/10 text-cyan-400">
-          <Shield className="w-6 h-6" />
+      <Card className="bg-black border-zinc-800 rounded-[3px] shadow-none p-4 flex items-center space-x-3.5">
+        <div className="p-2 border border-zinc-800 bg-zinc-950 text-white rounded-[2px]">
+          <Shield className="w-4 h-4" />
         </div>
-        <div>
-          <p className="text-xs text-gray-400 uppercase tracking-wider">Top Candidate</p>
-          <h3 className="text-lg font-semibold text-white truncate max-w-[150px]">
-            {topCandidate ? topCandidate.displayName : 'Detecting...'}
+        <div className="min-w-0 flex-1">
+          <p className="text-[9px] text-zinc-500 uppercase tracking-wider font-semibold">Top Candidate</p>
+          <h3 className="text-sm font-bold text-white truncate uppercase font-mono">
+            {topCandidate ? topCandidate.displayName : 'DETECTING...'}
           </h3>
         </div>
-      </div>
+      </Card>
 
       {/* CARD 2: Confidence */}
-      <div className="glass-panel glass-panel-hover p-4 flex items-center space-x-4">
-        <div className="p-3 rounded-lg bg-emerald-500/10 text-emerald-400">
-          <Cpu className="w-6 h-6" />
+      <Card className="bg-black border-zinc-800 rounded-[3px] shadow-none p-4 flex items-center space-x-3.5">
+        <div className="p-2 border border-zinc-800 bg-zinc-950 text-white rounded-[2px]">
+          <Cpu className="w-4 h-4" />
         </div>
-        <div>
-          <p className="text-xs text-gray-400 uppercase tracking-wider">Confidence Score</p>
-          <h3 className="text-lg font-semibold text-white">
+        <div className="min-w-0 flex-1">
+          <p className="text-[9px] text-zinc-500 uppercase tracking-wider font-semibold">Confidence Score</p>
+          <h3 className="text-sm font-bold text-white font-mono">
             {topCandidate ? `${Math.round(topCandidate.confidenceScore * 100)}%` : '0%'}
           </h3>
         </div>
-      </div>
+      </Card>
 
       {/* CARD 3: Participant Count */}
-      <div className="glass-panel glass-panel-hover p-4 flex items-center space-x-4">
-        <div className="p-3 rounded-lg bg-purple-500/10 text-purple-400">
-          <Users className="w-6 h-6" />
+      <Card className="bg-black border-zinc-800 rounded-[3px] shadow-none p-4 flex items-center space-x-3.5">
+        <div className="p-2 border border-zinc-800 bg-zinc-950 text-white rounded-[2px]">
+          <Users className="w-4 h-4" />
         </div>
-        <div>
-          <p className="text-xs text-gray-400 uppercase tracking-wider">Active Speakers</p>
-          <h3 className="text-lg font-semibold text-white">
-            {activeParticipants.length} <span className="text-xs text-gray-400">({participants.length} joined)</span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[9px] text-zinc-500 uppercase tracking-wider font-semibold">Active Speakers</p>
+          <h3 className="text-sm font-bold text-white font-mono">
+            {activeParticipants.length} <span className="text-[10px] text-zinc-500 font-normal">({participants.length} JOINED)</span>
           </h3>
         </div>
-      </div>
+      </Card>
 
       {/* CARD 4: Clock */}
-      <div className="glass-panel glass-panel-hover p-4 flex items-center space-x-4">
-        <div className="p-3 rounded-lg bg-rose-500/10 text-rose-400">
-          <Clock className="w-6 h-6" />
+      <Card className="bg-black border-zinc-800 rounded-[3px] shadow-none p-4 flex items-center space-x-3.5">
+        <div className="p-2 border border-zinc-800 bg-zinc-950 text-white rounded-[2px]">
+          <Clock className="w-4 h-4" />
         </div>
-        <div>
-          <p className="text-xs text-gray-400 uppercase tracking-wider">Session Duration</p>
-          <h3 className="text-lg font-semibold text-white">
-            {session?.status === 'ended' ? 'Ended' : elapsed}
+        <div className="min-w-0 flex-1">
+          <p className="text-[9px] text-zinc-500 uppercase tracking-wider font-semibold">Session Duration</p>
+          <h3 className="text-sm font-bold text-white font-mono">
+            {session?.status === 'ended' ? 'ENDED' : elapsed}
           </h3>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

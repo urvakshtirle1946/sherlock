@@ -11,7 +11,9 @@ import { ConfidenceGraph } from '../../../components/ConfidenceGraph';
 import { ExplainabilityPanel } from '../../../components/ExplainabilityPanel';
 import { SimulatorPanel } from '../../../components/SimulatorPanel';
 import { MonitoringPanel } from '../../../components/MonitoringPanel';
-import { Eye, ShieldAlert, Cpu, Play, Square, Link as LinkIcon, RefreshCw } from 'lucide-react';
+import { ShieldAlert, Cpu, Play, Square, Link as LinkIcon, RefreshCw } from 'lucide-react';
+import { Button } from '../../../components/ui/button';
+import { Card } from '../../../components/ui/card';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -56,7 +58,6 @@ export default function SessionDashboard() {
 
       setSession(sessionData);
       setParticipants(participantsData);
-      // Events come back newest-first from DB — reverse for chronological display
       setMonitoringEvents(
         monitoringData.map((e: any) => ({
           type: e.type,
@@ -77,24 +78,18 @@ export default function SessionDashboard() {
     if (sessionId) {
       loadData();
     }
-    return () => {
-      // Don't wipe the store during sub-page swaps to keep graphs intact,
-      // but wipe when navigating back to home.
-    };
   }, [sessionId]);
 
   const handleStartIngestion = async () => {
     if (!session?.meetingUrl) return alert('No meeting URL configured for this session.');
     
     try {
-      // Set session status to active on backend
       await fetch(`${API_BASE_URL}/api/sessions/${sessionId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'active' }),
       });
       
-      // Update local state
       setSession({ ...session, status: 'active', startedAt: new Date().toISOString() });
       setIngestionRunning(true);
     } catch (err) {
@@ -118,10 +113,10 @@ export default function SessionDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">
+      <div className="min-h-screen flex items-center justify-center bg-black text-white font-mono">
         <div className="flex flex-col items-center space-y-3">
-          <RefreshCw className="w-8 h-8 text-cyan-400 animate-spin" />
-          <p className="text-sm text-gray-400">Loading Sherlock session...</p>
+          <RefreshCw className="w-6 h-6 text-white animate-spin" />
+          <p className="text-xs uppercase tracking-wider text-zinc-500">Loading Sherlock session...</p>
         </div>
       </div>
     );
@@ -129,39 +124,38 @@ export default function SessionDashboard() {
 
   if (!session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white p-6">
-        <div className="glass-panel p-6 max-w-sm text-center border-rose-500/20">
-          <ShieldAlert className="w-8 h-8 text-rose-500 mx-auto mb-3" />
-          <h3 className="font-semibold text-white mb-1">Session Not Found</h3>
-          <p className="text-xs text-gray-400 mb-4">The requested session does not exist or has expired.</p>
-          <button
+      <div className="min-h-screen flex items-center justify-center bg-black text-white p-6 font-mono">
+        <Card className="bg-black border-zinc-800 rounded-[3px] p-6 max-w-sm text-center shadow-none">
+          <ShieldAlert className="w-6 h-6 text-white mx-auto mb-3" />
+          <h3 className="font-bold text-white mb-1 uppercase text-xs">Session Not Found</h3>
+          <p className="text-[10px] text-zinc-500 mb-4 uppercase">The requested session does not exist or has expired.</p>
+          <Button
             onClick={() => router.push('/')}
-            className="bg-slate-800 hover:bg-slate-700 text-white text-xs px-4 py-2 rounded-lg cursor-pointer"
+            size="sm"
+            className="text-[9px] font-bold uppercase rounded-[2px] cursor-pointer"
           >
             Go Back Home
-          </button>
-        </div>
+          </Button>
+        </Card>
       </div>
     );
   }
 
-  const activeParticipants = participants.filter((p) => !p.leftAt);
-
   return (
-    <main className="min-h-screen p-6 cyber-grid flex flex-col">
+    <main className="min-h-screen p-6 bg-black flex flex-col font-mono">
       
       {/* HEADER SECTION */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between pb-6 mb-6 border-b border-white/5 gap-4">
+      <header className="flex flex-col md:flex-row md:items-center justify-between pb-6 mb-6 border-b border-zinc-800 gap-4">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-lg bg-cyan-600/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 pulse-glow">
-            <Cpu className="w-5 h-5" />
+          <div className="w-8 h-8 rounded-[2px] bg-zinc-950 border border-zinc-800 flex items-center justify-center text-white">
+            <Cpu className="w-4 h-4" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white flex items-center space-x-2">
-              <span>Candidate Identifier Session</span>
+            <h1 className="text-sm font-bold text-white uppercase tracking-wider">
+              Verification Session Dashboard
             </h1>
-            <p className="text-xs text-gray-400">
-              Candidate: <strong className="text-gray-300">{session.candidateName}</strong> ({session.candidateEmail})
+            <p className="text-[9px] text-zinc-400 uppercase mt-0.5">
+              Candidate: <strong className="text-white">{session.candidateName}</strong> ({session.candidateEmail})
             </p>
           </div>
         </div>
@@ -169,49 +163,54 @@ export default function SessionDashboard() {
         {/* CONTROLS AREA */}
         <div className="flex items-center space-x-3">
           {session.ingestionMode !== 'live' && (
-            <button
+            <Button
               onClick={() => setShowSimulator(!showSimulator)}
-              className={`text-xs px-3.5 py-2 rounded-lg font-medium cursor-pointer transition-colors border ${
-                showSimulator 
-                  ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400' 
-                  : 'bg-slate-800 hover:bg-slate-700 border-white/5 text-gray-200'
+              variant="outline"
+              size="sm"
+              className={`h-8 text-[9px] font-bold uppercase rounded-[2px] border-zinc-800 cursor-pointer ${
+                showSimulator ? 'bg-white text-black hover:bg-zinc-200' : 'bg-black text-white hover:bg-zinc-900'
               }`}
             >
-              {showSimulator ? 'Close Simulator' : 'Open Simulator Panel'}
-            </button>
+              {showSimulator ? 'Close Simulator' : 'Open Simulator'}
+            </Button>
           )}
 
           {session.ingestionMode === 'live' ? (
             session.status === 'active' ? (
-              <button
+              <Button
                 onClick={handleStopIngestion}
-                className="flex items-center space-x-1.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold py-2 px-3.5 rounded-lg cursor-pointer transition-colors"
+                variant="outline"
+                size="sm"
+                className="h-8 text-[9px] font-bold uppercase rounded-[2px] border-zinc-800 bg-black text-white hover:bg-zinc-900 cursor-pointer"
               >
-                <Square className="w-3.5 h-3.5" />
+                <Square className="w-3 h-3 mr-1.5" />
                 <span>Stop Recall Bot</span>
-              </button>
+              </Button>
             ) : (
-              <div className="bg-slate-905 border border-white/5 text-gray-500 text-xs py-2 px-3.5 rounded-lg font-semibold select-none">
+              <div className="bg-zinc-950 border border-zinc-900 text-zinc-500 text-[9px] font-bold uppercase py-2 px-3 rounded-[2px] select-none">
                 Recall Bot Concluded
               </div>
             )
           ) : session.status !== 'active' ? (
-            <button
+            <Button
               onClick={handleStartIngestion}
               disabled={session.status === 'ended'}
-              className="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold py-2 px-3.5 rounded-lg cursor-pointer transition-colors"
+              size="sm"
+              className="h-8 text-[9px] font-bold uppercase rounded-[2px] cursor-pointer"
             >
-              <Play className="w-3.5 h-3.5" />
+              <Play className="w-3 h-3 mr-1.5" />
               <span>Start Ingestion</span>
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
               onClick={handleStopIngestion}
-              className="flex items-center space-x-1.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold py-2 px-3.5 rounded-lg cursor-pointer transition-colors"
+              variant="outline"
+              size="sm"
+              className="h-8 text-[9px] font-bold uppercase rounded-[2px] border-zinc-800 bg-black text-white hover:bg-zinc-900 cursor-pointer"
             >
-              <Square className="w-3.5 h-3.5" />
+              <Square className="w-3 h-3 mr-1.5" />
               <span>Stop Ingestion</span>
-            </button>
+            </Button>
           )}
 
           {session.meetingUrl && (
@@ -219,10 +218,10 @@ export default function SessionDashboard() {
               href={session.meetingUrl}
               target="_blank"
               rel="noreferrer"
-              className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-white/5 text-gray-400 hover:text-white transition-colors"
+              className="inline-flex items-center justify-center h-8 w-8 rounded-[2px] bg-black border border-zinc-800 text-zinc-500 hover:text-white transition-colors"
               title="Open Meeting Link"
             >
-              <LinkIcon className="w-4 h-4" />
+              <LinkIcon className="w-3.5 h-3.5" />
             </a>
           )}
         </div>
@@ -230,29 +229,31 @@ export default function SessionDashboard() {
 
       {/* DEMO MODE BANNER */}
       {session.ingestionMode !== 'live' && (
-        <div className="mb-6 p-3 bg-amber-950/20 border border-amber-500/20 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between text-xs text-amber-400 shadow-lg shadow-amber-950/10 gap-2">
+        <div className="mb-6 p-3 bg-zinc-950 border border-zinc-800 rounded-[2px] flex flex-col sm:flex-row sm:items-center justify-between text-[10px] text-zinc-400 gap-2 shadow-none font-mono">
           <div className="flex items-center space-x-2">
-            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse flex-shrink-0" />
-            <span><strong>Working in Demo Mode:</strong> You are currently simulating behavior and signals. Use the <strong>Simulator Panel</strong> to inject fake participants or signals.</span>
+            <span className="w-1.5 h-1.5 rounded-[1px] bg-white flex-shrink-0 animate-pulse" />
+            <span><strong>WORKING IN DEMO MODE:</strong> YOU ARE SIMULATING BEHAVIOR. USE THE SIMULATOR PANEL TO INJECT FAKE SIGNALS.</span>
           </div>
-          <button
+          <Button
             onClick={() => setShowSimulator(true)}
-            className="text-[10px] text-amber-400 hover:text-amber-300 font-semibold uppercase tracking-wider focus:outline-none cursor-pointer"
+            variant="outline"
+            size="sm"
+            className="h-6 text-[8px] px-2 uppercase font-bold border-zinc-800 rounded-[2px] cursor-pointer"
           >
             Open Simulator Panel
-          </button>
+          </Button>
         </div>
       )}
 
       {/* RECALL BOT BANNER */}
       {session.ingestionMode === 'live' && session.status === 'active' && (
-        <div className="mb-6 p-3 bg-cyan-950/20 border border-cyan-500/20 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between text-xs text-cyan-400 shadow-lg shadow-cyan-950/10 gap-2">
+        <div className="mb-6 p-3 bg-zinc-950 border border-zinc-800 rounded-[2px] flex flex-col sm:flex-row sm:items-center justify-between text-[10px] text-zinc-400 gap-2 shadow-none font-mono">
           <div className="flex items-center space-x-2">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse flex-shrink-0" />
-            <span><strong>Recall.ai Live Ingestion Active:</strong> Bot is joining and monitoring the meeting room.</span>
+            <span className="w-1.5 h-1.5 rounded-[1px] bg-white flex-shrink-0 animate-pulse" />
+            <span><strong>RECALL.AI LIVE INGESTION ACTIVE:</strong> BOT IS MONITORING THE MEETING ROOM.</span>
           </div>
           {session.recallBotId && (
-            <span className="text-[10px] text-gray-500 font-mono self-end sm:self-center">Bot ID: {session.recallBotId}</span>
+            <span className="text-[8px] text-zinc-600 font-mono">BOT ID: {session.recallBotId}</span>
           )}
         </div>
       )}
@@ -273,15 +274,15 @@ export default function SessionDashboard() {
         <div className={`space-y-6 ${showSimulator ? 'lg:col-span-3' : 'lg:col-span-4'}`}>
           <RankingList predictions={predictions} />
 
-          {/* Candidate Monitor panel — shows fingerprint, tab blur, face & posture events */}
+          {/* Candidate Monitor panel */}
           <MonitoringPanel events={monitoringEvents} sessionId={sessionId} />
           
           {/* SIMULATOR SHORTCUT INFO BOX */}
           {!showSimulator && session.ingestionMode !== 'live' && (
-            <div className="glass-panel p-4 bg-slate-900/40 text-xs text-gray-400 border-white/5">
-              <strong className="text-gray-300 block mb-1">Developer Mode</strong>
+            <Card className="p-4 bg-zinc-950/40 text-[9px] text-zinc-500 border border-zinc-900 rounded-[2px] shadow-none uppercase space-y-1">
+              <strong className="text-zinc-300 block mb-0.5 font-bold">Developer Mode</strong>
               You can simulate meeting participants and inject audio or camera signals in real-time by opening the <strong>Simulator Panel</strong> in the top menu bar.
-            </div>
+            </Card>
           )}
         </div>
 
@@ -294,8 +295,8 @@ export default function SessionDashboard() {
       </div>
 
       {/* PARTICIPANTS SECTION */}
-      <section className="mt-8">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4">
+      <section className="mt-8 border-t border-zinc-900 pt-6">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-4 font-mono">
           Participants Stream
         </h3>
         
@@ -311,7 +312,7 @@ export default function SessionDashboard() {
             );
           })}
           {participants.length === 0 && (
-            <div className="col-span-3 glass-panel p-8 text-center text-gray-500 text-sm">
+            <div className="col-span-3 border border-dashed border-zinc-800 p-8 text-center text-zinc-600 text-xs rounded-[2px] uppercase font-mono">
               {session.ingestionMode === 'live'
                 ? 'Recall.ai bot is connecting. Once participants join, they will appear here in real-time.'
                 : 'No participants connected. Start the ingestion bot or add fake participants in the Simulator.'
