@@ -228,6 +228,22 @@ export default function SessionDashboard() {
         </div>
       </header>
 
+      {/* DEMO MODE BANNER */}
+      {session.ingestionMode !== 'live' && (
+        <div className="mb-6 p-3 bg-amber-950/20 border border-amber-500/20 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between text-xs text-amber-400 shadow-lg shadow-amber-950/10 gap-2">
+          <div className="flex items-center space-x-2">
+            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse flex-shrink-0" />
+            <span><strong>Working in Demo Mode:</strong> You are currently simulating behavior and signals. Use the <strong>Simulator Panel</strong> to inject fake participants or signals.</span>
+          </div>
+          <button
+            onClick={() => setShowSimulator(true)}
+            className="text-[10px] text-amber-400 hover:text-amber-300 font-semibold uppercase tracking-wider focus:outline-none cursor-pointer"
+          >
+            Open Simulator Panel
+          </button>
+        </div>
+      )}
+
       {/* RECALL BOT BANNER */}
       {session.ingestionMode === 'live' && session.status === 'active' && (
         <div className="mb-6 p-3 bg-cyan-950/20 border border-cyan-500/20 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between text-xs text-cyan-400 shadow-lg shadow-cyan-950/10 gap-2">
