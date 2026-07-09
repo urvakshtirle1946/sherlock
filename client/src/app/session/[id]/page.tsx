@@ -261,6 +261,41 @@ export default function SessionDashboard() {
       {/* TOP SUMMARY CARDS */}
       <SummaryCards />
 
+      {/* NEXT STEPS / OPERATIONAL GUIDE CHECKLIST */}
+      <Card className="mb-6 bg-zinc-950/60 border border-zinc-800 rounded-[2px] p-4 shadow-none font-mono text-[10px] space-y-3">
+        <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+          Verification Checklist & Guide
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-zinc-400">
+          <div className="border border-zinc-900 bg-black p-3 rounded-[2px] space-y-1">
+            <span className="text-white font-bold block">01. SHARE MONITOR LINK</span>
+            <p className="text-[9px] text-zinc-500 leading-normal uppercase">
+              Copy the candidate monitor URL from the proctoring panel below and send it to the candidate.
+            </p>
+          </div>
+          <div className="border border-zinc-900 bg-black p-3 rounded-[2px] space-y-1">
+            <span className="text-white font-bold block">02. CANDIDATE CONNECTS</span>
+            <p className="text-[9px] text-zinc-500 leading-normal uppercase">
+              The candidate opens the link, authorizes camera permissions, and starts proctoring reporting.
+            </p>
+          </div>
+          <div className="border border-zinc-900 bg-black p-3 rounded-[2px] space-y-1">
+            <span className="text-white font-bold block">03. START INGESTION</span>
+            <p className="text-[9px] text-zinc-500 leading-normal uppercase">
+              {session.ingestionMode === 'live'
+                ? "Click 'Start Ingestion' above to invite the Recall.ai Bot into the meeting room."
+                : "Open the 'Simulator' above to create participants and inject simulated voice/face metrics."}
+            </p>
+          </div>
+          <div className="border border-zinc-900 bg-black p-3 rounded-[2px] space-y-1">
+            <span className="text-white font-bold block">04. MONITOR SIGNALS</span>
+            <p className="text-[9px] text-zinc-500 leading-normal uppercase">
+              Review live confidence match scores, evidence explainability logs, and proctoring blur events.
+            </p>
+          </div>
+        </div>
+      </Card>
+
       {/* GRID CONTAINER */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow">
         
