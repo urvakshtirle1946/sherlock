@@ -66,7 +66,15 @@ router.post('/join', async (req: Request, res: Response) => {
     // 2. Prepare Webhook Callback URL
     // IMPORTANT: Recall.ai requires a trailing "/" BEFORE any query parameters.
     // See: https://docs.recall.ai/docs/real-time-webhook-endpoints
-    const hostUrl = process.env.HOST_URL || 'http://localhost:4000';
+    let hostUrl = process.env.HOST_URL;
+    if (!hostUrl) {
+      const proto = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'http';
+      const host = req.get('host') || 'localhost:4000';
+      // Normalize protocol to https for cloud tunnels/deployments to satisfy Recall.ai
+      const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1');
+      const normalizedProto = !isLocalhost ? 'https' : proto;
+      hostUrl = `${normalizedProto}://${host}`;
+    }
     const webhookUrl = `${hostUrl}/api/webhooks/recall/?sessionId=${session._id}`;
 
     const region = process.env.RECALLAI_REGION || 'us-east-1';
