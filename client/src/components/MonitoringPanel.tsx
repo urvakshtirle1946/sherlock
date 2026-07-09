@@ -37,26 +37,26 @@ export function MonitoringPanel({ events, sessionId }: MonitoringPanelProps) {
   return (
     <Card className="bg-black border-zinc-800 rounded-[3px] p-4 space-y-3 h-full flex flex-col shadow-none">
       <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
-        <h3 className="text-xs font-semibold text-white uppercase tracking-wider font-mono">
+        <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
           Proctoring Monitor
         </h3>
         <a
           href={monitorUrl}
           target="_blank"
           rel="noreferrer"
-          className="text-[9px] text-zinc-400 hover:text-white uppercase font-bold tracking-wider font-mono transition-colors"
+          className="text-[10px] text-zinc-400 hover:text-white uppercase font-bold tracking-wider font-mono transition-colors"
         >
           Open monitor →
         </a>
       </div>
 
-      <p className="text-[9px] text-zinc-500 uppercase leading-relaxed font-mono">
+      <p className="text-[10px] text-zinc-400 uppercase leading-relaxed font-mono">
         TRACKS CLIENT FINGERPRINT · TAB VISIBILITY · FACE & POSTURE WARNINGS.
       </p>
 
       {/* Shareable Link Box */}
       <div className="bg-zinc-950 border border-zinc-900 rounded-[2px] p-2.5 space-y-1.5 font-mono">
-        <div className="flex items-center justify-between text-[8px] text-zinc-500 font-bold uppercase tracking-wider">
+        <div className="flex items-center justify-between text-[10px] text-zinc-400 font-bold uppercase tracking-wider">
           <span>Candidate Monitoring Link</span>
           <Button
             onClick={() => {
@@ -65,19 +65,19 @@ export function MonitoringPanel({ events, sessionId }: MonitoringPanelProps) {
             }}
             variant="outline"
             size="sm"
-            className="h-5 text-[8px] px-1.5 uppercase font-bold rounded-[2px] border-zinc-800 hover:bg-zinc-900 cursor-pointer"
+            className="h-5 text-[9px] px-1.5 uppercase font-bold rounded-[2px] border-zinc-800 hover:bg-zinc-900 cursor-pointer"
           >
             Copy URL
           </Button>
         </div>
-        <div className="bg-black border border-zinc-900 rounded-[2px] px-2 py-1 text-[8px] text-white select-all font-mono truncate">
+        <div className="bg-black border border-zinc-900 rounded-[2px] px-2 py-1 text-[10px] text-white select-all font-mono truncate">
           {monitorUrl.toUpperCase()}
         </div>
       </div>
 
-      <div className="flex-grow overflow-y-auto space-y-1.5 max-h-48 font-mono text-[9px]">
+      <div className="flex-grow overflow-y-auto space-y-1.5 max-h-48 font-mono text-[11px]">
         {events.length === 0 ? (
-          <p className="text-[10px] text-zinc-500 text-center py-4 uppercase">
+          <p className="text-xs text-zinc-500 text-center py-4 uppercase">
             No monitoring events yet. Share the monitor link with the candidate.
           </p>
         ) : (
@@ -103,10 +103,10 @@ export function MonitoringPanel({ events, sessionId }: MonitoringPanelProps) {
                     {cleanType}
                   </span>
                   {ev.detail && (
-                    <span className="text-zinc-500 ml-1">— {ev.detail.toUpperCase()}</span>
+                    <span className="text-zinc-400 ml-1">— {ev.detail.toUpperCase()}</span>
                   )}
                   {ev.type === 'device_fingerprint' && ev.metadata?.details && (
-                    <div className="mt-1.5 p-2 bg-zinc-950 rounded-[2px] border border-zinc-900 space-y-1 text-zinc-500 text-[8px] leading-normal uppercase">
+                    <div className="mt-1.5 p-2 bg-zinc-950 rounded-[2px] border border-zinc-900 space-y-1 text-zinc-500 text-[9px] leading-normal uppercase">
                       <div className="flex justify-between border-b border-zinc-900 pb-0.5 mb-1">
                         <span className="text-zinc-600 font-semibold">IP ADDRESS:</span>
                         <span className="text-white font-bold">{ev.metadata.ipAddress || 'UNKNOWN'}</span>
@@ -140,7 +140,7 @@ export function MonitoringPanel({ events, sessionId }: MonitoringPanelProps) {
                     </div>
                   )}
                 </div>
-                <span className="text-zinc-600 flex-shrink-0">
+                <span className="text-zinc-500 text-[10px] flex-shrink-0">
                   {new Date(ev.timestamp).toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit',
