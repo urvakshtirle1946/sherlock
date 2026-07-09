@@ -59,7 +59,33 @@ async function main() {
 
   // ── Express ──────────────────────────────────────────────────────────────
   const app = express();
-  app.use(cors({ origin: CLIENT_URL, credentials: true }));
+  
+  const allowedOrigins = [
+    CLIENT_URL,
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://127.0.0.1:3000'
+  ];
+
+  const corsOptions = {
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean | string) => void) => {
+      if (!origin) return callback(null, true);
+      const isAllowed = allowedOrigins.includes(origin) || 
+                        origin.endsWith('.vercel.app') || 
+                        origin.endsWith('.loca.lt') ||
+                        origin.startsWith('http://localhost') ||
+                        origin.startsWith('http://127.0.0.1');
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        // Reflect origin dynamically to prevent CORS blocks during dev/previews
+        callback(null, origin);
+      }
+    },
+    credentials: true
+  };
+
+  app.use(cors(corsOptions));
   app.use(express.json({ limit: '10mb' })); // frames arrive as base64
   app.use('/uploads', express.static(path.resolve(process.env.UPLOAD_DIR ?? 'uploads')));
 
@@ -86,7 +112,7 @@ async function main() {
   // ── Socket.io ────────────────────────────────────────────────────────────
   const httpServer = http.createServer(app);
   const io = new SocketServer(httpServer, {
-    cors: { origin: CLIENT_URL, methods: ['GET', 'POST'] },
+    cors: corsOptions,
   });
   app.set('io', io);
 
